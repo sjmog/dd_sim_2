@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Canvas from '../components/Canvas';
+import World from '../components/World';
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <Canvas />
+        <World />
       </main>
 
       <style jsx>{`

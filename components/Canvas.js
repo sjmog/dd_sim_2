@@ -1,102 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { drawSquare } from '../utils';
-import { Grid, Pixel, Character } from '../src';
 
 export default function Canvas(props) {
-  const TILE_SIZE = 24;
-  const COLUMNS = 50;
-  const ROWS = 40;
-
-  const CANVAS_WIDTH = TILE_SIZE * COLUMNS;
-  const CANVAS_HEIGHT = TILE_SIZE * ROWS;
+  const CANVAS_WIDTH = props.tileSize * props.columns;
+  const CANVAS_HEIGHT = props.tileSize * props.rows;
 
   const canvasRef = useRef(null);
   const [context, setContext] = useState(null);
 
-  const CHARACTER = new Character(2, 2);
-
-  const GRID = new Grid(ROWS, COLUMNS);
-
   const drawPixel = (pixel) => {
-    const x = TILE_SIZE * (pixel.column - 1);
-    const y = TILE_SIZE * (pixel.row - 1);
+    const x = props.tileSize * (pixel.column - 1);
+    const y = props.tileSize * (pixel.row - 1);
 
-    drawSquare(context, x, y, TILE_SIZE, pixel.color())
+    drawSquare(context, x, y, props.tileSize, pixel.color())
   }
 
   const drawGrid = () => {
-    for(let i = 0; i < GRID.length; i++) {
-      for(let j = 0; j < GRID[i].length; j++) {
-        drawPixel(GRID[i][j]);
+    for(let i = 0; i < props.grid.length; i++) {
+      for(let j = 0; j < props.grid[i].length; j++) {
+        drawPixel(props.grid[i][j]);
       }
     }
   }
 
   const drawCharacter = () => {
-    drawPixel(CHARACTER, TILE_SIZE, 'red');
-  }
-
-  const distanceBetween = (pixelA, pixelB) => {
-    return Math.sqrt(Math.pow(Math.abs(pixelA.column - pixelB.column), 2) + Math.pow(Math.abs(pixelA.row - pixelB.row), 2))
+    drawPixel(props.character, props.tileSize, 'red');
   }
 
   const getPixel = (column, row) => {
-    return GRID[row][column];
-  }
-
-  const plotMovement = (target, head = { row: CHARACTER.row, columns: CHARACTER.column }, tilesTravelled = 1) => {
-    if(target.row === head.row && target.column === head.column) return;
-
-    // check the tiles around
-    const topExists = head.row - 1 > 0;
-    const rightExists = head.column + 1 < COLUMNS;
-    const bottomExists = head.row + 1 < ROWS;
-    const leftExists = head.column - 1 > 0;
-
-    const tilesAround = [];
-
-    if(topExists) {
-      tilesAround.push(GRID[head.row - 1][head.column]);
-    }
-
-    if(topExists && rightExists) {
-      tilesAround.push(GRID[head.row - 1][head.column + 1]);
-    }
-
-    if(rightExists) {
-      tilesAround.push(GRID[head.row][head.column + 1]);
-    }
-
-    if(rightExists && bottomExists) {
-      tilesAround.push(GRID[head.row + 1][head.column + 1]);
-    }
-
-    if(bottomExists) {
-      tilesAround.push(GRID[head.row + 1][head.column]);
-    }
-
-    if(bottomExists && leftExists) {
-      tilesAround.push(GRID[head.row + 1][head.column - 1]);
-    }
-
-    if(leftExists) {
-      tilesAround.push(GRID[head.row][head.column - 1]);
-    }
-
-    if(leftExists && topExists) {
-      tilesAround.push(GRID[head.row - 1][head.column - 1]);
-    }
-
-    // for each, see if they are closer to the target
-    const distances = tilesAround.map((pixel) => distanceBetween(pixel, target))
-
-    // if so, choose that path
-    const nextTile = tilesAround[distances.indexOf(Math.min(...distances))]
-    nextTile.setPathData({ reachable: tilesTravelled <= CHARACTER.speed })
-
-    CHARACTER.target(nextTile);
-
-    plotMovement(target, nextTile, tilesTravelled + 1)
+    return props.grid[row][column];
   }
 
   useEffect(() => {
@@ -110,10 +42,10 @@ export default function Canvas(props) {
             x = e.clientX - rect.left,
             y = e.clientY - rect.top
 
-      if(x < 0 || y < 0 || x > canvas.width - TILE_SIZE - 1 || y > canvas.height - TILE_SIZE) return;
+      if(x < 0 || y < 0 || x > canvas.width - props.tileSize - 1 || y > canvas.height - props.tileSize) return;
 
-      GRID.forEach((row) => row.forEach((pixel) => pixel.setHover(false)))
-      const hoveredPixel = GRID[Math.floor(y / TILE_SIZE) + 1][Math.floor(x / TILE_SIZE) + 1];
+      props.grid.forEach((row) => row.forEach((pixel) => pixel.setHover(false)))
+      const hoveredPixel = props.grid[Math.floor(y / props.tileSize) + 1][Math.floor(x / props.tileSize) + 1];
       hoveredPixel.setHover(true);
     }
 
@@ -124,26 +56,13 @@ export default function Canvas(props) {
             x = e.clientX - rect.left,
             y = e.clientY - rect.top
 
-      if(x < 0 || y < 0 || x > canvas.width - TILE_SIZE - 1 || y > canvas.height) return;
+      if(x < 0 || y < 0 || x > canvas.width - props.tileSize - 1 || y > canvas.height) return;
 
-      const column = Math.floor(x / TILE_SIZE) + 1;
-      const row = Math.floor(y / TILE_SIZE) + 1;
-      const target = GRID[row][column];
+      const column = Math.floor(x / props.tileSize) + 1;
+      const row = Math.floor(y / props.tileSize) + 1;
+      const target = props.grid[row][column];
 
-      if(column === CHARACTER.targetColumn && row === CHARACTER.targetRow) {
-        CHARACTER.move(target);
-        GRID.forEach((row) => row.forEach((pixel) => pixel.setPathData(null)))
-        return;
-      }
-
-      GRID.forEach((row) => row.forEach((pixel) => pixel.setTarget(false)))
-      target.setTarget(true);
-
-      if(target.row === CHARACTER.row && target.column === CHARACTER.column) return;
-
-      GRID.forEach((row) => row.forEach((pixel) => pixel.setPathData(null)))
-
-      plotMovement(target, CHARACTER);
+      props.onRightClick(target);
     }
 
    let animationFrameId = requestAnimationFrame(renderFrame);

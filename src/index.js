@@ -55,17 +55,36 @@ const Character = function(column, row) {
   this.column = column;
   this.row = row;
   this.speed = 30 / 5; // 30 feet over 5-foot squares
+  this.movementRemaining = this.speed; // default to fresh movement
 
   this.color = () => 'red';
 
-  this.move = (pixel) => {
-    this.column = pixel.column;
-    this.row = pixel.row;
+  // stateful data
+  this.path = [];
+
+  this.move = () => {
+    if(this.path.length === 0) return;
+
+    for(let i = 0; this.movementRemaining > 0; i++) {
+      const nextPixel = this.path[i];
+
+      if(nextPixel === undefined) return;
+
+      this.column = nextPixel.column;
+      this.row = nextPixel.row;
+
+      nextPixel.setPathData(null);
+
+      this.movementRemaining--;
+    }
   }
 
-  this.target = (pixel) => {
-    this.targetColumn = pixel.column;
-    this.targetRow = pixel.row;
+  this.setPath = (pixels) => {
+    this.path = pixels;
+  }
+
+  this.setTarget = (pixel) => {
+    this.target = pixel;
   }
 }
 
