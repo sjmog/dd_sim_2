@@ -3,9 +3,9 @@ import { drawSquare } from '../utils';
 import { Grid, Pixel, Character } from '../src';
 
 export default function Canvas(props) {
-  const TILE_SIZE = 36;
-  const COLUMNS = 30;
-  const ROWS = 20;
+  const TILE_SIZE = 24;
+  const COLUMNS = 50;
+  const ROWS = 40;
 
   const CANVAS_WIDTH = TILE_SIZE * COLUMNS;
   const CANVAS_HEIGHT = TILE_SIZE * ROWS;
@@ -40,20 +40,53 @@ export default function Canvas(props) {
     return Math.sqrt(Math.pow(Math.abs(pixelA.column - pixelB.column), 2) + Math.pow(Math.abs(pixelA.row - pixelB.row), 2))
   }
 
+  const getPixel = (column, row) => {
+    return GRID[row][column];
+  }
+
   const plotMovement = (target, head = { row: CHARACTER.row, columns: CHARACTER.column }, tilesTravelled = 1) => {
     if(target.row === head.row && target.column === head.column) return;
 
     // check the tiles around
-    const tilesAround = [
-                          GRID[head.row - 1][head.column],
-                          GRID[head.row - 1][head.column + 1],
-                          GRID[head.row][head.column + 1],
-                          GRID[head.row + 1][head.column + 1],
-                          GRID[head.row + 1][head.column],
-                          GRID[head.row + 1][head.column - 1],
-                          GRID[head.row][head.column - 1],
-                          GRID[head.row - 1][head.column - 1],
-                        ]
+    const topExists = head.row - 1 > 0;
+    const rightExists = head.column + 1 < COLUMNS;
+    const bottomExists = head.row + 1 < ROWS;
+    const leftExists = head.column - 1 > 0;
+
+    const tilesAround = [];
+
+    if(topExists) {
+      tilesAround.push(GRID[head.row - 1][head.column]);
+    }
+
+    if(topExists && rightExists) {
+      tilesAround.push(GRID[head.row - 1][head.column + 1]);
+    }
+
+    if(rightExists) {
+      tilesAround.push(GRID[head.row][head.column + 1]);
+    }
+
+    if(rightExists && bottomExists) {
+      tilesAround.push(GRID[head.row + 1][head.column + 1]);
+    }
+
+    if(bottomExists) {
+      tilesAround.push(GRID[head.row + 1][head.column]);
+    }
+
+    if(bottomExists && leftExists) {
+      tilesAround.push(GRID[head.row + 1][head.column - 1]);
+    }
+
+    if(leftExists) {
+      tilesAround.push(GRID[head.row][head.column - 1]);
+    }
+
+    if(leftExists && topExists) {
+      tilesAround.push(GRID[head.row - 1][head.column - 1]);
+    }
+
     // for each, see if they are closer to the target
     const distances = tilesAround.map((pixel) => distanceBetween(pixel, target))
 
