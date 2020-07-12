@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import Canvas from '../components/Canvas';
-import Controls from '../components/Controls';
 import { Grid, Pixel, Character } from '../src';
 
 export default function World(props) {
@@ -43,9 +42,17 @@ export default function World(props) {
     plotPath(target, CHARACTER);
   }
 
-  const distanceBetween = (pixelA, pixelB) => {
-    return Math.sqrt(Math.pow(Math.abs(pixelA.column - pixelB.column), 2) + Math.pow(Math.abs(pixelA.row - pixelB.row), 2))
+  const handleSpacebar = () => {
+     
   }
+
+  useEffect(() => {
+    window.document.onkeyup = function(e) {
+      e.preventDefault();
+
+      if(e.keyCode == 32) { nextTurn(); }
+    }
+  })
 
   const plotPath = (target, head = { row: CHARACTER.row, column: CHARACTER.column }, tilesTravelled = 1) => {
     if(target.row === head.row && target.column === head.column) return;
@@ -71,7 +78,7 @@ export default function World(props) {
         character={CHARACTER} 
         tileSize={TILE_SIZE} 
         onRightClick={handleRightClick} />
-      <Controls character={CHARACTER} nextTurn={nextTurn} />
+        <p className="help">Press Spacebar to end turn.</p>
     </div>
   )
 }

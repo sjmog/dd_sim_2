@@ -46,6 +46,11 @@ export default function Home() {
         * {
           box-sizing: border-box;
         }
+
+        .help {
+          color: #afafaf;
+          text-align: center;
+        }
       `}</style>
     </div>
   )
