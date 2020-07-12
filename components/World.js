@@ -1,51 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Canvas from '../components/Canvas';
-import { Grid, Pixel, Character } from '../src';
 
 export default function World(props) {
-  const TILE_SIZE = 36;
-  const COLUMNS = 20;
-  const ROWS = 15;
-
-  const CHARACTER = new Character(2, 2);
-  const GRID = new Grid(ROWS, COLUMNS);
-
-  const setupMap = (grid) => {
-    // add an impassable tile (testing)
-
-    grid.pixel(4, 4).setImpassable(true);
-  }
-
-  setupMap(GRID);
+  const [turn, setTurn] = useState(1);
 
   const handleRightClick = (target) => {
     // move if a confirmatory click
-    if(target === CHARACTER.target) {
-      return CHARACTER.move();
+    if(target === props.character.target) {
+      return props.character.move();
     }
 
     if(target.impassable) { return; }
 
     // set the target for the character
-    CHARACTER.setTarget(target);
+    props.character.setTarget(target);
 
     // ignore the click if the character is already at the target
-    if(target.row === CHARACTER.row && target.column === CHARACTER.column) return;
+    if(target.row === props.character.row && target.column === props.character.column) return;
 
     // clear the previous target and set the new one
-    GRID.all((pixel) => pixel.setTarget(false));
+    props.grid.all((pixel) => pixel.setTarget(false));
     target.setTarget(true);
 
     // clear the previous character path and grid pathdata
-    CHARACTER.setPath([]);
-    GRID.all((pixel) => pixel.setPathData(null));
+    props.character.setPath([]);
+    props.grid.all((pixel) => pixel.setPathData(null));
 
     // recursively pathfind
-    plotPath(target, CHARACTER);
-  }
-
-  const handleSpacebar = () => {
-     
+    plotPath(target, props.character);
   }
 
   useEffect(() => {
@@ -56,30 +38,33 @@ export default function World(props) {
     }
   })
 
-  const plotPath = (target, head = { row: CHARACTER.row, column: CHARACTER.column }, tilesTravelled = 1) => {
+  const plotPath = (target, head = { row: props.character.row, column: props.character.column }, tilesTravelled = 1) => {
     if(target.row === head.row && target.column === head.column) return;
 
-    const nextPixel = GRID.nextPixel(head, target)
-    nextPixel.setPathData({ reachable: tilesTravelled <= CHARACTER.movementRemaining })
+    const nextPixel = props.grid.nextPixel(head, target)
+    nextPixel.setPathData({ reachable: tilesTravelled <= props.character.movementRemaining })
 
-    CHARACTER.setPath([...CHARACTER.path, nextPixel]);
+    props.character.setPath([...props.character.path, nextPixel]);
 
     plotPath(target, nextPixel, tilesTravelled + 1)
   }
 
   const nextTurn = () => {
-    CHARACTER.movementRemaining = CHARACTER.speed;
+    props.character.movementRemaining = props.character.speed;
+
+    setTurn(turn + 1);
   }
 
   return(
     <div>
       <Canvas 
-        rows={ROWS} 
-        columns={COLUMNS} 
-        grid={GRID} 
-        character={CHARACTER} 
-        tileSize={TILE_SIZE} 
-        onRightClick={handleRightClick} />
+        rows={props.rows} 
+        columns={props.columns} 
+        grid={props.grid} 
+        character={props.character} 
+        tileSize={props.tileSize} 
+        onRightClick={handleRightClick}
+        turn={turn} />
         <p className="help">Press Spacebar to end turn.</p>
     </div>
   )
