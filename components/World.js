@@ -25,9 +25,6 @@ export default function World(props) {
       return CHARACTER.move();
     }
 
-    // set the target for the character
-    CHARACTER.setTarget(target);
-
     // ignore the click if the character is already at the target
     if(target.row === CHARACTER.row && target.column === CHARACTER.column) return;
 

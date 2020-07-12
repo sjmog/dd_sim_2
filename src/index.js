@@ -122,10 +122,6 @@ const Character = function(column, row) {
   this.setPath = (pixels) => {
     this.path = pixels;
   }
-
-  this.setTarget = (pixel) => {
-    this.target = pixel;
-  }
 }
 
 module.exports = { Grid, Pixel, Character };
