@@ -35,6 +35,7 @@ Grid.prototype.nextPixel = function(pixel, target) {
   const pixelsAround = this
                         .flat()
                         .filter((possiblePixel) => {
+                          if(possiblePixel.impassable) return false;
                           const distance = distanceBetween(pixel, possiblePixel);
                           return distance <= Math.sqrt(2); // or distance === 1 || distance === Math.sqrt(2); (but in a single check)
                         });
