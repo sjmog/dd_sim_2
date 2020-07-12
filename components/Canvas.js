@@ -16,19 +16,15 @@ export default function Canvas(props) {
   }
 
   const drawGrid = () => {
-    for(let i = 0; i < props.grid.length; i++) {
-      for(let j = 0; j < props.grid[i].length; j++) {
-        drawPixel(props.grid[i][j]);
+    for(let i = 1; i <= props.rows; i++) {
+      for(let j = 1; j <= props.columns; j++) {
+        drawPixel(props.grid.pixel(i, j));
       }
     }
   }
 
   const drawCharacter = () => {
     drawPixel(props.character, props.tileSize, 'red');
-  }
-
-  const getPixel = (column, row) => {
-    return props.grid[row][column];
   }
 
   useEffect(() => {
@@ -42,11 +38,13 @@ export default function Canvas(props) {
             x = e.clientX - rect.left,
             y = e.clientY - rect.top
 
-      if(x < 0 || y < 0 || x > canvas.width - props.tileSize - 1 || y > canvas.height - props.tileSize) return;
+      if(x < 0 || y < 0 || x > props.columns * props.tileSize || y > props.rows * props.tileSize) return;
 
-      props.grid.forEach((row) => row.forEach((pixel) => pixel.setHover(false)))
-      const hoveredPixel = props.grid[Math.floor(y / props.tileSize) + 1][Math.floor(x / props.tileSize) + 1];
-      hoveredPixel.setHover(true);
+      // unset all previous hovers
+      props.grid.all((pixel) => pixel.setHover(false));
+
+      // set the pixel to hover
+      props.grid.pixel(Math.floor(y / props.tileSize) + 1, Math.floor(x / props.tileSize) + 1).setHover(true);
     }
 
     canvas.oncontextmenu = function(e) {
@@ -60,7 +58,7 @@ export default function Canvas(props) {
 
       const column = Math.floor(x / props.tileSize) + 1;
       const row = Math.floor(y / props.tileSize) + 1;
-      const target = props.grid[row][column];
+      const target = props.grid.pixel(row, column);
 
       props.onRightClick(target);
     }

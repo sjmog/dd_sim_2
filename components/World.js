@@ -11,6 +11,14 @@ export default function World(props) {
   const CHARACTER = new Character(2, 2);
   const GRID = new Grid(ROWS, COLUMNS);
 
+  const setupMap = (grid) => {
+    // add an impassable tile (testing)
+
+    grid.pixel(4, 4).setImpassable(true);
+  }
+
+  setupMap(GRID);
+
   const handleRightClick = (target) => {
     // move if a confirmatory click
     if(target === CHARACTER.target) {
@@ -24,12 +32,12 @@ export default function World(props) {
     if(target.row === CHARACTER.row && target.column === CHARACTER.column) return;
 
     // clear the previous target and set the new one
-    GRID.forEach((row) => row.forEach((pixel) => pixel.setTarget(false)));
+    GRID.all((pixel) => pixel.setTarget(false));
     target.setTarget(true);
 
     // clear the previous character path and grid pathdata
     CHARACTER.setPath([]);
-    GRID.forEach((row) => row.forEach((pixel) => pixel.setPathData(null)))
+    GRID.all((pixel) => pixel.setPathData(null));
 
     // recursively pathfind
     plotPath(target, CHARACTER);
@@ -42,56 +50,12 @@ export default function World(props) {
   const plotPath = (target, head = { row: CHARACTER.row, column: CHARACTER.column }, tilesTravelled = 1) => {
     if(target.row === head.row && target.column === head.column) return;
 
-    // check the tiles around
-    const topExists = head.row - 1 > 0;
-    const rightExists = head.column + 1 < COLUMNS;
-    const bottomExists = head.row + 1 < ROWS;
-    const leftExists = head.column - 1 > 0;
+    const nextPixel = GRID.nextPixel(head, target)
+    nextPixel.setPathData({ reachable: tilesTravelled <= CHARACTER.movementRemaining })
 
-    const tilesAround = [];
+    CHARACTER.setPath([...CHARACTER.path, nextPixel]);
 
-    if(topExists) {
-      tilesAround.push(GRID[head.row - 1][head.column]);
-    }
-
-    if(topExists && rightExists) {
-      tilesAround.push(GRID[head.row - 1][head.column + 1]);
-    }
-
-    if(rightExists) {
-      tilesAround.push(GRID[head.row][head.column + 1]);
-    }
-
-    if(rightExists && bottomExists) {
-      tilesAround.push(GRID[head.row + 1][head.column + 1]);
-    }
-
-    if(bottomExists) {
-      tilesAround.push(GRID[head.row + 1][head.column]);
-    }
-
-    if(bottomExists && leftExists) {
-      tilesAround.push(GRID[head.row + 1][head.column - 1]);
-    }
-
-    if(leftExists) {
-      tilesAround.push(GRID[head.row][head.column - 1]);
-    }
-
-    if(leftExists && topExists) {
-      tilesAround.push(GRID[head.row - 1][head.column - 1]);
-    }
-
-    // for each, see if they are closer to the target
-    const distances = tilesAround.map((pixel) => distanceBetween(pixel, target))
-
-    // if so, choose that path
-    const nextTile = tilesAround[distances.indexOf(Math.min(...distances))]
-    nextTile.setPathData({ reachable: tilesTravelled <= CHARACTER.movementRemaining })
-
-    CHARACTER.setPath([...CHARACTER.path, nextTile]);
-
-    plotPath(target, nextTile, tilesTravelled + 1)
+    plotPath(target, nextPixel, tilesTravelled + 1)
   }
 
   const nextTurn = () => {
