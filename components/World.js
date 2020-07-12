@@ -24,6 +24,8 @@ export default function World(props) {
       return CHARACTER.move();
     }
 
+    if(target.impassable) { return; }
+
     // set the target for the character
     CHARACTER.setTarget(target);
 
