@@ -32,10 +32,6 @@ export default function Canvas(props) {
     drawPixel(entity, props.tileSize, entity.color());
   }
 
-  const drawMenu = () => {
-    // drawText(props.menu.text, props.tileSize, '#000');
-  }
-
   useEffect(() => {
     const canvas = canvasRef.current;
     setContext(canvas.getContext("2d"));
@@ -82,8 +78,6 @@ export default function Canvas(props) {
      for(let i = 0; i < props.entities.length; i++) {
       drawEntity(props.entities[i]);
      }
-
-     drawMenu();
    }
 
     return () => cancelAnimationFrame(animationFrameId);

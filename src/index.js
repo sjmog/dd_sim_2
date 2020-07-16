@@ -1,3 +1,5 @@
+import { d } from '../utils';
+
 const Grid = function(rows, columns) {
   const pixels = [...Array(rows).keys()].map(rowIndex => {
         return [...Array(columns).keys()].map(columnIndex => {
@@ -69,7 +71,7 @@ const Pixel = function(column, row) {
   }
 
   //stateful data
-  this.things = [new Thing('ground', { ac: 0, hp: Infinity })];
+  this.entities = [new Entity('ground', { ac: 0, hp: Infinity, column: column, row: row })];
 
   this.impassable = false;
   this.isHoveredOver = false;
@@ -92,24 +94,27 @@ const Pixel = function(column, row) {
     this.pathData = data;
   }
 
-  this.addThing = (thing) => {
-    this.things = [...this.things, thing];
+  this.addEntity = (entity) => {
+    this.entities = [...this.entities, thing];
   }
 }
 
-const Thing = function(name, properties) {
-  this.name = name;
-  this.text = name; // hmmmmm
-
-  this.properties = properties;
-}
-
-const Entity = function(column, row, name, properties) {
+const Entity = function(name, properties) {
   // presentational data
-  this.column = column;
-  this.row = row;
+  this.column = properties.column;
+  this.row = properties.row;
   this.name = name;
   this.properties = properties;
+
+  this.damage = (amount) => {
+    this.properties.hp -= amount;
+
+    if(this.properties.hp < 0) { this.properties.hp = 0; this.die() }
+  }
+
+  this.die = () => {
+    console.log(`${ name } died!`)
+  }
 
   this.color = () => 'blue'
 }
@@ -154,20 +159,20 @@ const Character = function(column, row) {
   this.attack = (thing) => {
     console.log('character attacking', thing)
 
-    const d20 = Math.floor(Math.random() * 20) + 1;
+    const attackRoll = d(20);
 
-    if(d20 > thing.properties.ac) {
-      console.log('character hits with a roll of', d20)
+    if(attackRoll < thing.properties.ac) {
+      console.log('character misses with a roll of', attackRoll)
+    } else {
+      console.log('character hits with a roll of', attackRoll)
 
-      const d8 = Math.floor(Math.random() * 8) + 1;
+      const damageRoll = d(8);
 
-      thing.properties.hp -= d8
+      thing.damage(damageRoll)
 
-      console.log(`character deals ${d8} damage. ${thing.name} has ${thing.properties.hp} hit points remaining.`)
+      console.log(`character deals ${damageRoll} damage. ${thing.name} has ${thing.properties.hp} hit points remaining.`)
     }
   }
 }
-
-Character.prototype.__proto__ = Entity.prototype;
 
 module.exports = { Grid, Pixel, Entity, Character };

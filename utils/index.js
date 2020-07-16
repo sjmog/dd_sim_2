@@ -42,4 +42,6 @@ const drawSquare = (ctx, startX, startY, width, fill) => {
   ctx.strokeStyle = "#000";
 }
 
-module.exports = { drawBezier, drawCircle, drawLine, drawSquare }
+const d = number => Math.floor(Math.random() * number) + 1;
+
+module.exports = { drawBezier, drawCircle, drawLine, drawSquare, d }

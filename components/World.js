@@ -48,7 +48,7 @@ export default function World(props) {
     // add some text to the menu
     setMenu({ 
       panes: [
-        { title: "Things", items: [...target.things, ...props.entities.filter(entity => entity.row === target.row && entity.column === target.column)] }
+        { title: "Entities", items: [...target.entities, ...props.entities.filter(entity => entity.row === target.row && entity.column === target.column)] }
       ], 
       top: event.clientY, 
       left: event.clientX 
