@@ -64,7 +64,6 @@ export default function World(props) {
   }
 
   const handleMenuClick = (item, thing) => {
-    console.log('clicked menu item', item);
     if(item.name === "Attack") {
       props.character.attack(thing);
       return setMenu({ panes: [] });
