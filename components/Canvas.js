@@ -8,14 +8,10 @@ export default function Canvas(props) {
   const canvasRef = useRef(null);
   const [context, setContext] = useState(null);
 
-  console.log('rerendering canvas with grid', props.grid);
-
   const drawPixel = (pixel) => {
     const x = props.tileSize * (pixel.column - 1);
     const y = props.tileSize * (pixel.row - 1);
     const color = pixel.color();
-
-    if(color === 'green') {console.log('green')};
 
     drawSquare(context, x, y, props.tileSize, color)
   }
