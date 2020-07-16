@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Canvas from '../components/Canvas';
 
 export default function World(props) {
-  const [turn, setTurn] = useState(1);
+  const ENTER = 32
+  const A = 65
+  const M = 77
 
-  const handleRightClick = (target) => {
+  const [turn, setTurn] = useState(1);
+  const [mode, setMode] = useState("movement");
+
+  const handleMovement = (target) => {
     // move if a confirmatory click
     if(target === props.character.target) {
       return props.character.move();
@@ -30,11 +35,19 @@ export default function World(props) {
     plotPath(target, props.character);
   }
 
+  const handleRightClick = (target) => {
+    if(mode === "movement") handleMovement(target);
+  }
+
+  const handlePressA = () => setMode("action")
+
   useEffect(() => {
     window.document.onkeyup = function(e) {
       e.preventDefault();
 
-      if(e.keyCode == 32) { nextTurn(); }
+      if(e.keyCode == ENTER) { nextTurn(); }
+      if(e.keyCode == A) { setMode("action"); }
+      if(e.keyCode == M) { setMode("movement"); }
     }
   })
 
@@ -59,6 +72,7 @@ export default function World(props) {
 
     // this will also force a rerender
     setTurn(turn + 1);
+    setMode("movement")
   }
 
   return(
@@ -73,6 +87,7 @@ export default function World(props) {
         onRightClick={handleRightClick}
         turn={turn} />
         <p className="help">Press Spacebar to end turn.</p>
+        <p className="help">Current Mode: {mode}</p>
     </div>
   )
 }
