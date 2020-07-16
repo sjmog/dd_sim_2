@@ -59,11 +59,11 @@ const Pixel = function(column, row) {
 
   this.color = () => {
     if(this.impassable) return IMPASSABLE_COLOR;
-    if(this.isHoveredOver) return HOVER_COLOR;
     if(this.pathData) {
       if(this.pathData.reachable) return REACHABLE_PATH_COLOR;
       return PATH_COLOR;
     }
+    if(this.isHoveredOver) return HOVER_COLOR;
     if(this.isTarget) return TARGET_COLOR;
     return this.DEFAULT_COLOR;
   }
@@ -89,6 +89,14 @@ const Pixel = function(column, row) {
   this.setPathData = (data) => {
     this.pathData = data;
   }
+}
+
+const Entity = function(column, row) {
+  // presentational data
+  this.column = column;
+  this.row = row;
+
+  this.color = () => 'blue';
 }
 
 const Character = function(column, row) {
@@ -129,4 +137,6 @@ const Character = function(column, row) {
   }
 }
 
-module.exports = { Grid, Pixel, Character };
+Character.prototype.__proto__ = Entity.prototype;
+
+module.exports = { Grid, Pixel, Entity, Character };

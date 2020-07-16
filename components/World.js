@@ -51,16 +51,23 @@ export default function World(props) {
 
   const nextTurn = () => {
     props.character.movementRemaining = props.character.speed;
+    for(let i = 0; i < props.entities.length; i++) {
+      const entity = props.entities[i];
 
+      if(entity.target) { plotPath(entity.target, entity) }
+    }
+
+    // this will also force a rerender
     setTurn(turn + 1);
   }
 
   return(
     <div>
-      <Canvas 
+      <Canvas
         rows={props.rows} 
         columns={props.columns} 
         grid={props.grid} 
+        entities={props.entities}
         character={props.character} 
         tileSize={props.tileSize} 
         onRightClick={handleRightClick}

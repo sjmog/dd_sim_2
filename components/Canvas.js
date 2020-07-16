@@ -8,11 +8,16 @@ export default function Canvas(props) {
   const canvasRef = useRef(null);
   const [context, setContext] = useState(null);
 
+  console.log('rerendering canvas with grid', props.grid);
+
   const drawPixel = (pixel) => {
     const x = props.tileSize * (pixel.column - 1);
     const y = props.tileSize * (pixel.row - 1);
+    const color = pixel.color();
 
-    drawSquare(context, x, y, props.tileSize, pixel.color())
+    if(color === 'green') {console.log('green')};
+
+    drawSquare(context, x, y, props.tileSize, color)
   }
 
   const drawGrid = () => {
@@ -25,6 +30,10 @@ export default function Canvas(props) {
 
   const drawCharacter = () => {
     drawPixel(props.character, props.tileSize, 'red');
+  }
+
+  const drawEntity = (entity) => {
+    drawPixel(entity, props.tileSize, entity.color());
   }
 
   useEffect(() => {
@@ -69,6 +78,10 @@ export default function Canvas(props) {
      animationFrameId = requestAnimationFrame(renderFrame);
      drawGrid();
      drawCharacter();
+
+     for(let i = 0; i < props.entities.length; i++) {
+      drawEntity(props.entities[i]);
+     }
    }
 
     return () => cancelAnimationFrame(animationFrameId);
