@@ -69,6 +69,8 @@ const Pixel = function(column, row) {
   }
 
   //stateful data
+  this.things = [new Thing('ground', { ac: 0, hp: Infinity })];
+
   this.impassable = false;
   this.isHoveredOver = false;
   this.isTarget = false;
@@ -89,14 +91,26 @@ const Pixel = function(column, row) {
   this.setPathData = (data) => {
     this.pathData = data;
   }
+
+  this.addThing = (thing) => {
+    this.things = [...this.things, thing];
+  }
 }
 
-const Entity = function(column, row) {
+const Thing = function(name, properties) {
+  this.name = name;
+  this.text = name; // hmmmmm
+
+  this.properties = properties;
+}
+
+const Entity = function(column, row, name) {
   // presentational data
   this.column = column;
   this.row = row;
+  this.name = name;
 
-  this.color = () => 'blue';
+  this.color = () => 'blue'
 }
 
 const Character = function(column, row) {
@@ -134,6 +148,22 @@ const Character = function(column, row) {
 
   this.setTarget = (target) => {
     this.target = target;
+  }
+
+  this.attack = (thing) => {
+    console.log('character attacking', thing)
+
+    const d20 = Math.floor(Math.random() * 20) + 1;
+
+    if(d20 > thing.properties.ac) {
+      console.log('character hits with a roll of', d20)
+
+      const d8 = Math.floor(Math.random() * 8) + 1;
+
+      thing.properties.hp -= d8
+
+      console.log(`character deals ${d8} damage. ${thing.name} has ${thing.properties.hp} hit points remaining.`)
+    }
   }
 }
 

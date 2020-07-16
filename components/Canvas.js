@@ -32,6 +32,10 @@ export default function Canvas(props) {
     drawPixel(entity, props.tileSize, entity.color());
   }
 
+  const drawMenu = () => {
+    // drawText(props.menu.text, props.tileSize, '#000');
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current;
     setContext(canvas.getContext("2d"));
@@ -65,7 +69,7 @@ export default function Canvas(props) {
       const row = Math.floor(y / props.tileSize) + 1;
       const target = props.grid.pixel(row, column);
 
-      props.onRightClick(target);
+      props.onRightClick(target, e);
     }
 
    let animationFrameId = requestAnimationFrame(renderFrame);
@@ -78,6 +82,8 @@ export default function Canvas(props) {
      for(let i = 0; i < props.entities.length; i++) {
       drawEntity(props.entities[i]);
      }
+
+     drawMenu();
    }
 
     return () => cancelAnimationFrame(animationFrameId);

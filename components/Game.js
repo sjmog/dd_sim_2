@@ -8,7 +8,7 @@ export default function Game(props) {
   const ROWS = 15;
 
   const CHARACTER = new Character(2, 2);
-  const ENTITIES = [CHARACTER, new Entity(8, 9)];
+  const ENTITIES = [CHARACTER, new Entity(8, 9, 'Goblin')];
   const GRID = new Grid(ROWS, COLUMNS);
 
   const setupMap = (grid) => {

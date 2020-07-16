@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Canvas from '../components/Canvas';
+import Canvas from './Canvas';
+import Menu from './Menu';
 
 export default function World(props) {
   const ENTER = 32
@@ -8,6 +9,7 @@ export default function World(props) {
 
   const [turn, setTurn] = useState(1);
   const [mode, setMode] = useState("movement");
+  const [menu, setMenu] = useState({ panes: [] });
 
   const handleMovement = (target) => {
     // move if a confirmatory click
@@ -35,11 +37,41 @@ export default function World(props) {
     plotPath(target, props.character);
   }
 
-  const handleRightClick = (target) => {
-    if(mode === "movement") handleMovement(target);
+  const handleAction = (target, event) => {
+    // set the target for the character
+    props.character.setTarget(target);
+
+    // clear the previous target and set the new one
+    props.grid.all((pixel) => pixel.setTarget(false));
+    target.setTarget(true);
+
+    // add some text to the menu
+    setMenu({ 
+      panes: [
+        { title: "Things", items: target.things }
+      ], 
+      top: event.clientY, 
+      left: event.clientX 
+    })
+    // render that text to the canvas somehow
+
+    // make the pixels containing that text respond to a left-click by activating that action
   }
 
-  const handlePressA = () => setMode("action")
+  const handleRightClick = (target, event) => {
+    if(mode === "movement") handleMovement(target);
+    if(mode === "action") handleAction(target, event);
+  }
+
+  const handleMenuClick = (item, thing) => {
+    console.log('clicked menu item', item);
+    if(item.name === "Attack") {
+      props.character.attack(thing);
+      return setMenu({ panes: [] });
+    }
+
+    setMenu({ panes: [...menu.panes, {title: "Actions", items: [{ name: "Attack" }]}], top: menu.top, left: menu.left });
+  }
 
   useEffect(() => {
     window.document.onkeyup = function(e) {
@@ -88,6 +120,8 @@ export default function World(props) {
         turn={turn} />
         <p className="help">Press Spacebar to end turn.</p>
         <p className="help">Current Mode: {mode}</p>
+
+      <Menu menu={menu} onClick={handleMenuClick} />
     </div>
   )
 }
