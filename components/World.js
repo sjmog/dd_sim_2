@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Canvas from './Canvas';
+import MessageBoard from './MessageBoard';
+import DetailsPanel from './DetailsPanel';
 import Menu from './Menu';
 
 export default function World(props) {
@@ -109,19 +111,36 @@ export default function World(props) {
 
   return(
     <div>
-      <Canvas
-        rows={props.rows} 
-        columns={props.columns} 
-        grid={props.grid} 
-        entities={props.entities}
-        character={props.character} 
-        tileSize={props.tileSize} 
-        onRightClick={handleRightClick}
-        turnCount={turnCount} />
+      <div className="ui">
+        <DetailsPanel gridColumns={props.columns} tileSize={props.tileSize} />
+        <Canvas
+          rows={props.rows} 
+          columns={props.columns} 
+          grid={props.grid} 
+          entities={props.entities}
+          character={props.character} 
+          tileSize={props.tileSize} 
+          onRightClick={handleRightClick}
+          turnCount={turnCount} />
+        <MessageBoard gridColumns={props.columns} tileSize={props.tileSize} />
+      </div>
+
+      <div className="hints">
         <p className="help">Press Spacebar to end turn.</p>
         <p className="help">Current Mode: {mode}</p>
+      </div>
 
       <Menu menu={menu} onClick={handleMenuClick} />
+
+      <style jsx>{`
+        .ui {
+          width: 100vw;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        }
+      `}</style>
     </div>
   )
 }

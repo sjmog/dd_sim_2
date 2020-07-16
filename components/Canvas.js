@@ -84,8 +84,6 @@ export default function Canvas(props) {
   })
 
   return(
-    <div>
-      <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
-    </div>
+    <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
   );
 }
