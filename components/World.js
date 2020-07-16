@@ -7,9 +7,9 @@ export default function World(props) {
   const A = 65
   const M = 77
 
-  const [turn, setTurn] = useState(1);
   const [mode, setMode] = useState("movement");
   const [menu, setMenu] = useState({ panes: [] });
+  const [turnCount, setTurnCount] = useState(1);
 
   const handleMovement = (target) => {
     // move if a confirmatory click
@@ -95,6 +95,7 @@ export default function World(props) {
 
   const nextTurn = () => {
     props.character.movementRemaining = props.character.speed;
+
     for(let i = 0; i < props.entities.length; i++) {
       const entity = props.entities[i];
 
@@ -102,7 +103,7 @@ export default function World(props) {
     }
 
     // this will also force a rerender
-    setTurn(turn + 1);
+    setTurnCount(turnCount + 1);
     setMode("movement")
   }
 
@@ -116,7 +117,7 @@ export default function World(props) {
         character={props.character} 
         tileSize={props.tileSize} 
         onRightClick={handleRightClick}
-        turn={turn} />
+        turnCount={turnCount} />
         <p className="help">Press Spacebar to end turn.</p>
         <p className="help">Current Mode: {mode}</p>
 
