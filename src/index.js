@@ -104,11 +104,12 @@ const Thing = function(name, properties) {
   this.properties = properties;
 }
 
-const Entity = function(column, row, name) {
+const Entity = function(column, row, name, properties) {
   // presentational data
   this.column = column;
   this.row = row;
   this.name = name;
+  this.properties = properties;
 
   this.color = () => 'blue'
 }

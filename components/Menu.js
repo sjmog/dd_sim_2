@@ -4,7 +4,7 @@ export default function Menu(props) {
   const [thing, setThing] = useState(null);
 
   const handleClick = (item) => {
-    if(item.constructor.name == 'Thing') {
+    if(item.constructor.name == 'Thing' || item.constructor.name == 'Entity') {
       setThing(item);
     };
 
