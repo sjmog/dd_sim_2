@@ -12,6 +12,7 @@ export default function World(props) {
   const [mode, setMode] = useState("movement");
   const [menu, setMenu] = useState({ panes: [] });
   const [turnCount, setTurnCount] = useState(1);
+  const [messages, setMessages] = useState([]);
 
   const handleMovement = (target) => {
     // move if a confirmatory click
@@ -79,8 +80,8 @@ export default function World(props) {
       e.preventDefault();
 
       if(e.keyCode == ENTER) { nextTurn(); }
-      if(e.keyCode == A) { setMode("action"); }
-      if(e.keyCode == M) { setMode("movement"); }
+      if(e.keyCode == A) { changeMode("action"); }
+      if(e.keyCode == M) { changeMode("movement"); }
     }
   })
 
@@ -93,6 +94,11 @@ export default function World(props) {
     props.character.setPath([...props.character.path, nextPixel]);
 
     plotPath(target, nextPixel, tilesTravelled + 1)
+  }
+
+  const changeMode = (mode) => {
+    addMessage({ type: 'info', text: `Changed mode to ${ mode }.` });
+    setMode(mode);
   }
 
   const nextTurn = () => {
@@ -109,6 +115,10 @@ export default function World(props) {
     setMode("movement")
   }
 
+  const addMessage = (message) => {
+    setMessages([...messages, message]);
+  }
+
   return(
     <div>
       <div className="ui">
@@ -122,7 +132,7 @@ export default function World(props) {
           tileSize={props.tileSize} 
           onRightClick={handleRightClick}
           turnCount={turnCount} />
-        <MessageBoard gridColumns={props.columns} tileSize={props.tileSize} />
+        <MessageBoard gridRows={props.rows} gridColumns={props.columns} tileSize={props.tileSize} messages={messages} />
       </div>
 
       <div className="hints">
